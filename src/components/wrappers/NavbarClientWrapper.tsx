@@ -8,6 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from '../ui/button';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import AccountDropDownMenu from '../features/account/AccountDropDownMenu';
 
 const NavbarClientWrapper = () => {
   const {isAuthenticated,user} = useAuth()
@@ -47,11 +48,7 @@ const NavbarClientWrapper = () => {
           </button>
 
           {/* User Avatar */}
-          <img
-            src={user?.avatar}
-            alt="User"
-            className="w-8 h-8 rounded-full object-cover"
-          />
+        {user && <AccountDropDownMenu user={user}/>}
         </div>
         ):
         <Button variant="outline" className="" asChild>

@@ -11,6 +11,11 @@ export interface User {
   username: string;
   email: string;
   avatar?: string;
+  bio?:string;
+  name?:string;
+  channelId?:string
+theme?:string;
+language?:string;
   createdAt: string;
 }
 export interface AuthState {
