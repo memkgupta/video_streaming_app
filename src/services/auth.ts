@@ -11,7 +11,7 @@ export const login = async(
     if(response.data.success && response.data.data)
     {
         const {tokens} = response.data.data;
-        setAuthTokens(tokens.acessToken,tokens.refreshToken)
+        setAuthTokens(tokens.accessToken,tokens.refreshToken)
     }
 return response.data;
 }
@@ -22,7 +22,7 @@ export const register = async(
         if(response.data.success && response.data.data)
     {
         const {tokens} = response.data.data;
-        setAuthTokens(tokens.acessToken,tokens.refreshToken)
+        setAuthTokens(tokens.accessToken,tokens.refreshToken)
     }
 return response.data;
 }
@@ -43,7 +43,7 @@ export const refreshAuth = async (): Promise<APIResponse<AuthTokens>> => {
   }})
 
   if (response.success && response.data) {
-    setAuthTokens(response.data.acessToken, response.data.refreshToken);
+    setAuthTokens(response.data.accessToken, response.data.refreshToken);
   } else {
     // If refresh fails, it's critical to remove old (now invalid) tokens
     // to prevent loops or using stale data.
@@ -54,28 +54,29 @@ export const refreshAuth = async (): Promise<APIResponse<AuthTokens>> => {
   return response
 };
 const verifyTokenAndGetUserWithRefresh = async (): Promise<APIResponse<User>> => {
-  // Initial attempt to verify token and get user
-  // Using POST here as per existing 'post' utility. A GET might be more idiomatic.
-    const accessToken = getAuthToken()
-  let {data:verifyResponse} =  await api.get<APIResponse<User>>(VERIFY_AUTH_ENDPOINT)
-
-  // Check if the initial verification failed, potentially due to an expired token
   
-  if (!verifyResponse.success) {
-    
-    const refreshResult = await refreshAuth();
+   let accessToken = getAuthToken(); // First get
 
-    if (refreshResult.success && refreshResult.data) {
-    
-      setAuthTokens(refreshResult.data.acessToken,refreshResult.data.refreshToken)
-    } else {
-      return {
-        success: false,
-        error: refreshResult.error || 'Token refresh failed after initial verification failure.',
-      };
+    try{
+
+  let res =  await api.get<APIResponse<User>>(VERIFY_AUTH_ENDPOINT,{
+    headers:{
+      "Authorization":`Bearer ${accessToken}`
     }
-  }
-  return verifyResponse;
+  })
+
+  
+   
+  return res.data;
+    }
+    catch(error:any){
+      console.log("erroro")
+      return Promise.reject("Some error occured")
+    }
+
+
+
+ 
 };
 /**
  * Log out user by removing tokens and clearing any user state
@@ -86,10 +87,14 @@ export const logout = (): void => {
 };
 export const isAuthenticated = async (): Promise<boolean> => {
   const token = getAuthToken();
-  if (!token) {
+  const refreshToken = getRefreshToken()
+  if (!token && !refreshToken) {
     return false; // No token, definitely not authenticated
   }
-
+  if(!token && refreshToken){
+ await refreshAuth()
+  }
+ 
   const response = await verifyTokenAndGetUserWithRefresh();
   return response!=null;
 };

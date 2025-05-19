@@ -15,10 +15,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
   const [serverError, setServerError] = useState<string | null>(null);
-
+  const auth = useAuth()
   const {
     register,
     handleSubmit,
@@ -26,13 +28,13 @@ export default function RegisterForm() {
   } = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema),
   });
-
+  const router = useRouter()
   const onSubmit = async (data: RegisterSchema) => {
     setServerError(null);
     try {
       console.log("Register attempt with:", data);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      alert("Account creation attempt.");
+      await auth.register(data)
+     router.replace("/home")
     } catch (error) {
       setServerError("An error occurred during registration. Please try again.");
     }

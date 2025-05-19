@@ -13,35 +13,28 @@ import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Select, SelectItem, SelectTrigger, SelectValue, SelectContent } from "@/components/ui/select"
 import { User } from "@/types"
-
+import { ImageSelector } from "@/components/utils/image-selector/image-selector"
 type Props = {
   user: User
   onUpdate: (updatedData: Partial<User>) => void
 }
-
 const AccountSettings = ({ user, onUpdate }: Props) => {
   const [form, setForm] = useState({
     name: user.name || "",
     email: user.email || "",
     bio: user.bio || "",
     avatar: user.avatar || "",
-
     theme: user.theme || "system",
     language: user.language || "en",
-
   })
 
   const handleChange = (key: string, value: any) => {
     setForm((prev) => ({ ...prev, [key]: value }))
   }
 
-  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const fakeUrl = URL.createObjectURL(file)
-      handleChange("avatar", fakeUrl)
-      // Real case: upload to cloud, get URL, then update
-    }
+  const handleAvatarUpload = (url:string) => {
+    console.log(url)
+    setForm({...form,avatar:url});
   }
 
   const saveChanges = () => {
@@ -52,9 +45,9 @@ const AccountSettings = ({ user, onUpdate }: Props) => {
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6">
+        <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="channel">Channel</TabsTrigger>
+          
           <TabsTrigger value="preferences">Preferences</TabsTrigger>
         </TabsList>
 
@@ -72,33 +65,13 @@ const AccountSettings = ({ user, onUpdate }: Props) => {
 
             <Label>Avatar</Label>
             <div className="flex items-center gap-4">
-              <img src={form.avatar} className="w-16 h-16 rounded-full object-cover" alt="avatar" />
-              <Input type="file" accept="image/*" onChange={handleAvatarUpload} />
+              <ImageSelector isRound preview={form.avatar} setImage={handleAvatarUpload} type="profile" />
+            
             </div>
           </div>
         </TabsContent>
 
-        {/* Channel Tab */}
-        {/* <TabsContent value="channel">
-          <div className="space-y-4">
-            <Label>Channel Name</Label>
-            <Input value={form.channelName} onChange={(e) => handleChange("channelName", e.target.value)} />
-
-            <Label>Description</Label>
-            <Textarea value={form.channelDescription} onChange={(e) => handleChange("channelDescription", e.target.value)} />
-
-            <Label>Category</Label>
-            <Select value={form.category} onValueChange={(val) => handleChange("category", val)}>
-              <SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="education">Education</SelectItem>
-                <SelectItem value="tech">Technology</SelectItem>
-                <SelectItem value="vlog">Vlogs</SelectItem>
-                <SelectItem value="music">Music</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </TabsContent> */}
+  
 
         {/* Preferences Tab */}
         <TabsContent value="preferences">

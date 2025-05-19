@@ -20,9 +20,9 @@ type AuthAction =
   | { type: 'REGISTER_SUCCESS'; payload: AuthResponse }
   | { type: 'REGISTER_FAILURE'; payload: string }
   | { type: 'LOGOUT' }
-  | { type: 'INITIALIZE'; payload: { user: User | null; token: string | null; refreshToken: string | null } };
-
-  const isFrontendDev = true
+  | { type: 'INITIALIZE'; payload: { user: User | null; token: string | null; refreshToken: string | null } }
+  | {type:"UPDATE"; payload:{user:User}};
+  const isFrontendDev = false
 
 // Sample user and response
 const mockUser: User = {
@@ -59,6 +59,7 @@ interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<boolean>;
   register: (credentials: RegisterCredentials) => Promise<boolean>;
   logout: () => void;
+  update:(data:User)=>void;
 }
 
 // Create auth context
@@ -67,6 +68,7 @@ export const AuthContext = createContext<AuthContextType>({
   login: async () => false,
   register: async () => false,
   logout: () => {},
+  update:(data)=>{}
 });
 
 // Auth reducer function
@@ -110,6 +112,11 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         refreshToken: action.payload.refreshToken,
         isAuthenticated: !!action.payload.user,
         isLoading: false,
+      };
+    case 'UPDATE':
+      return {
+        ...state,
+        user:action.payload.user
       };
     default:
       return state;
@@ -205,6 +212,7 @@ const handleRegister = async (credentials: RegisterCredentials): Promise<boolean
 
   try {
     const response = await register(credentials);
+    console.log(response)
     if (response.success && response.data) {
       dispatch({ type: 'REGISTER_SUCCESS', payload: response.data });
       return true;
@@ -223,7 +231,9 @@ const handleRegister = async (credentials: RegisterCredentials): Promise<boolean
     logout();
     dispatch({ type: 'LOGOUT' });
   };
-
+ const handleUpdate = (data:User)=>{
+  dispatch({type:"UPDATE",payload:{user:data}})
+ }
   // Create memoized context value
   const contextValue = useMemo(
     () => ({
@@ -231,6 +241,7 @@ const handleRegister = async (credentials: RegisterCredentials): Promise<boolean
       login: handleLogin,
       register: handleRegister,
       logout: handleLogout,
+      update:handleUpdate
     }),
     [state]
   );

@@ -5,14 +5,14 @@ import axios, { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestCo
 import {toast} from "sonner"
 const api : AxiosInstance = axios.create({
     baseURL:BACKEND_BASE_URL,
-    withCredentials:true,
+   withCredentials:true,
     timeout:30000
 })
 
 api.interceptors.request.use(
     (config:InternalAxiosRequestConfig)=>{
         const token = getAuthToken();
-        if(token && config.headers)
+        if(token && config.headers && !config.url?.endsWith("/refresh-token"))
         {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -31,6 +31,7 @@ api.interceptors.response.use(
         const aError = error as AxiosError<APIResponse<string>>
         const status = aError.response?.status;
     const msg = aError.response?.data.message || error.message;
+    console.log(msg)
 if (!aError.response) {
       toast.error("Network error. Please check your internet connection.");
     } else if (status === 400 || status === 422) {
@@ -45,8 +46,11 @@ if (!aError.response) {
     } else if (status! >= 500) {
       toast.error("Server error. Try again later.");
     }
+    else{
+      toast.error(msg)
+    }
         
-        return Promise.reject(aError);
+        return error;
     }
 )
 export default api

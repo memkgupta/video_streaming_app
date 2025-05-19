@@ -9,6 +9,7 @@ import { AuthContext, AuthProvider } from "@/context/AuthContext";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import ClientLayout from "@/components/layout/ClientLayout";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +40,9 @@ export default function RootLayout({
       >
          <AuthProvider>
 <ClientLayout >
+  <Toaster >
+
+  </Toaster>
   {children}
   </ClientLayout>
        
