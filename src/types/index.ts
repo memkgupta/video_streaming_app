@@ -5,6 +5,7 @@ export interface APIResponse<T>
     message?:string,
     error?:string,
     nextCursor?:string|number
+    prevCursor?:string|number
 }
 export interface User {
   id: string;
@@ -25,6 +26,21 @@ export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+}
+export type Video = {
+  id: string;
+  title: string;
+  thumbnail: string;
+  visibility: "Public" | "Private" | "Unlisted";
+  views: number;
+  uploadedAt: string;
+};
+export interface VideoDetailsForm{
+  title:string,
+  description?:string,
+  category?:string,
+  thumbnail?:string,
+  visibility:string
 }
 
 export interface LoginCredentials {

@@ -158,14 +158,21 @@ const {
     infiniteOptions = {},
   } = options;
 
-  return useInfiniteQuery<{data:T,nextCursor:string|number|undefined},AxiosError>({
+  return useInfiniteQuery<{data:T,nextCursor:string|number|undefined,prevCursor:string|number|undefined},AxiosError>({
     queryKey:queryKey!,
-    queryFn: async ({ pageParam = 1 }): Promise<{data:T,nextCursor:string|number|undefined}> => {
+    queryFn: async ({ pageParam = 1 }): Promise<{data:T,nextCursor:string|number|undefined,prevCursor:string|number|undefined}> => {
       const separator = url.includes('?') ? '&' : '?';
       const response = await api.get<APIResponse<T>>(`${url}${separator}page=${pageParam}`);
-      return {data:response.data.data!,nextCursor:response.data.nextCursor};
+      return {data:response.data.data!,nextCursor:response.data.nextCursor,prevCursor:response.data.prevCursor};
     },
     getNextPageParam,
+    getPreviousPageParam:(firstPage)=>{
+      if(!firstPage.prevCursor)
+      {
+        return undefined
+      }
+      firstPage.prevCursor
+    },
     enabled,
     initialPageParam:1,
     ...infiniteOptions,

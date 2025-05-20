@@ -1,0 +1,62 @@
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Video } from 'lucide-react'
+import React, { useState } from 'react'
+import SelectFile from './steps/select-file'
+import VideoDetails from './steps/video-details'
+import Visibility from './steps/visibility'
+import FinalizeVideoUpload from './steps/final'
+
+const VideoUploadDialog = () => {
+    const [activeStep,setActiveStep] = useState(0);
+    const steps = [
+        {
+            id:"select-file",
+            title:"Select File",
+            description:"Select file",
+            component:<SelectFile/>
+        },
+        {
+            id:"video-details",
+            title:"Video Details",
+            description:"Enter the video details",
+            component:<VideoDetails/>
+        },
+ 
+            {
+                id:"finalize",
+                title:"Video Uploaded Successfully",
+                description:"Video uploaded",
+                component:<FinalizeVideoUpload/>
+            }
+        
+    ]
+  return (
+    <Dialog>
+  <DialogTrigger asChild>
+    <Button variant="ghost"  className="flex items-center rounded-md bg-gray-100 hover:bg-gray-300">
+              <Video className="w-5 h-5"/>
+            <span>Create</span>
+          
+        </Button>
+  </DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>{steps[activeStep].title}</DialogTitle>
+      <DialogDescription>
+       {steps[activeStep].description}
+      </DialogDescription>
+    </DialogHeader>
+    {steps[activeStep].component}
+    <DialogFooter className='flex justify-end'>
+    <div className='flex gap-2'>
+        <Button disabled={activeStep<=1} onClick={(e)=>{setActiveStep(activeStep-1)}}>Back</Button>
+        <Button disabled={activeStep==2} onClick={(e)=>{setActiveStep(activeStep+1)}}>Next</Button>
+    </div>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+  )
+}
+
+export default VideoUploadDialog

@@ -60,7 +60,7 @@ export function ImageEditorModal({
     }
   }
   return (
-    <div>
+    <div className='mt-12'>
       <div className="flex justify-center">
         <Cropper
           image={getImageUrl(initialImage)}

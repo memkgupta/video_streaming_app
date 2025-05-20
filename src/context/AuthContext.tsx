@@ -22,7 +22,7 @@ type AuthAction =
   | { type: 'LOGOUT' }
   | { type: 'INITIALIZE'; payload: { user: User | null; token: string | null; refreshToken: string | null } }
   | {type:"UPDATE"; payload:{user:User}};
-  const isFrontendDev = false
+  const isFrontendDev = true
 
 // Sample user and response
 const mockUser: User = {

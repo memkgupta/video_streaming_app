@@ -27,11 +27,12 @@ interface Props {
   isRound: boolean;
   type: string;
   title?: string;
+  key?:any
   setImage: (url: string) => void;
   size?: { width: number; height: number };
 }
 
-export function ImageSelector({ preview, isRound, type, title, setImage, size }: Props) {
+export function ImageSelector({ preview, isRound, type, title, setImage, size,key }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string |Blob| null>(preview);
   const [isChanged, setIsChanged] = useState(false);
@@ -95,14 +96,14 @@ export function ImageSelector({ preview, isRound, type, title, setImage, size }:
     <div className="mx-auto p-6">
       <input
         type="file"
-        id="image-upload-input"
+        id={`image-upload-input-${type}`}
         accept="image/*"
         style={{ display: 'none' }}
         onChange={handleFileChange}
       />
 
       <div
-        onClick={() => document.getElementById('image-upload-input')?.click()}
+        onClick={() => document.getElementById(`image-upload-input-${type}`)?.click()}
         className={`border-2 border-dashed border-gray-300 text-center cursor-pointer hover:border-blue-500 transition-colors relative ${adjustments.isRound ? 'rounded-full' : 'rounded-lg'}`}
         style={{
           height: size?.height || 200,
@@ -136,8 +137,19 @@ export function ImageSelector({ preview, isRound, type, title, setImage, size }:
       </div>
 
       {isChanged && (
-        <Dialog defaultOpen open={isChanged} onOpenChange={setIsChanged}>
-          <DialogContent className="max-h-screen max-w-screen">
+        <Dialog   key={key?key:""} defaultOpen open={isChanged} onOpenChange={setIsChanged}>
+          <DialogContent className="max-h-screen w-full "  style={{
+      width: size ? `${size.width + 32}px` : 'auto',
+      height: size ? `${size.height + 300}px` : 'auto',
+      maxWidth: 'calc(100vw - 32px)',
+      maxHeight: 'calc(100vh )',
+      overflow: 'visible', // Prevent scroll if you want full fit
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}>
+
             <ImageEditorModal
               size={size}
               isRounded={isRound}

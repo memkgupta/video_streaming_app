@@ -39,9 +39,9 @@ const NavbarClientWrapper = () => {
             <SearchBar />
           </div>
 
-          <button className="p-2 rounded-full hover:bg-gray-100">
+          <Link href={"/channel/add-video"} className="p-2 rounded-full hover:bg-gray-100">
             <Video className="w-5 h-5" />
-          </button>
+          </Link>
 
           <button className="p-2 rounded-full hover:bg-gray-100">
             <Bell className="w-5 h-5" />
