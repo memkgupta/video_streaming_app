@@ -14,7 +14,7 @@ const COOKIE_OPTIONS =
 const AUTH_TOKEN_OPTIONS = 
 {
     ...COOKIE_OPTIONS,
-    expires:1/24
+    expires:1/144
 }
 
 export const setAuthTokens = (token: string, refreshToken: string): void => {

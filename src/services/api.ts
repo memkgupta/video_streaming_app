@@ -12,7 +12,7 @@ const api : AxiosInstance = axios.create({
 api.interceptors.request.use(
     (config:InternalAxiosRequestConfig)=>{
         const token = getAuthToken();
-        if(token && config.headers && !config.url?.endsWith("/refresh-token"))
+        if(token && config.headers && !config.url?.endsWith("/refresh-token") && !config.url?.endsWith("/login") && !config.url?.endsWith("/register") )
         {
             config.headers.Authorization = `Bearer ${token}`;
         }

@@ -42,8 +42,10 @@ export function useApiGet<T>(url:string,apiOptions:AxiosRequestConfig,options:Ap
     queryKey,
     queryFn:async():Promise<T>=>{
         const response = await api.get<APIResponse<T>>(url,apiOptions);
+        if(onSuccess)onSuccess(response.data.data!)
         return response.data.data!;
     },
+    
     enabled,
     ...queryOptions
   });

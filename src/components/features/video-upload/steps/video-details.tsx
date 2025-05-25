@@ -3,25 +3,48 @@ import { FormControl, FormField } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { VideoDetailsForm } from '@/types';
+import { APIResponse, VideoDetailsForm } from '@/types';
 import React from 'react'
 import { useForm } from 'react-hook-form';
 import { ThumbnailInput } from '../thumbnail-input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useUploadVideoStore } from '@/stores/uploadStore';
+import api from '@/services/api';
+import { toast } from 'sonner';
 
 const VideoDetails = () => {
+  const {videoDetails,setVideoDetails,videoId,assetId,setNextStep} = useUploadVideoStore()
+console.log(videoDetails)
       const {
     register,
     control,
+  
     handleSubmit,
     formState: { errors },
-  } = useForm<VideoDetailsForm>();
+  
+  } = useForm<VideoDetailsForm>({
+    defaultValues:videoDetails
+  });
 
 
+  const onSubmit = async(data: VideoDetailsForm) => {
+ try{
+  setVideoDetails(data)
+await api.put(`/video/videos/fill-details`,{
+...videoDetails,assetId:assetId
+},{
+  params:{
+    videoId:videoId
+  }
+})
+setNextStep()
 
-  const onSubmit = (data: VideoDetailsForm) => {
-   
-    console.log("Form submitted", data);
+ }
+ catch(error)
+ {
+  console.log(error)
+  toast.error("Some error occured")
+ }
   };
   return (
     <div>

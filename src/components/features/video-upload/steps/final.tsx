@@ -1,9 +1,13 @@
 import { Button } from '@/components/ui/button';
+import api from '@/services/api';
+import { useUploadVideoStore } from '@/stores/uploadStore';
 import { CopyIcon, ExternalLinkIcon } from 'lucide-react';
 import React, { useState } from 'react'
+import { toast } from 'sonner';
 
 const FinalizeVideoUpload = () => {
      const [copied, setCopied] = useState(false);
+     const {videoId} = useUploadVideoStore()
      const thumbnailUrl = ""
      const videoUrl = ""
      const title = ""
@@ -12,6 +16,19 @@ const FinalizeVideoUpload = () => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+  const publish = async()=>{
+try{
+const req = await api.post(`/video/videos/publish`,{},{params:{
+  videoId:videoId
+}});
+
+}
+catch(error)
+{
+  console.log(error);
+  toast.error("Some error occured");
+}
+  }
   return (
    <div className="border rounded-xl p-6 shadow-md w-full  mx-auto space-y-4">
       <div className="flex flex-col  gap-4">
@@ -37,12 +54,13 @@ const FinalizeVideoUpload = () => {
               {copied ? "Copied!" : "Copy Link"}
             </Button>
 
-            <a href={videoUrl} target="_blank" rel="noopener noreferrer">
+            <a href={`/studio/content/${videoId}`} target="_blank" rel="noopener noreferrer">
               <Button variant="secondary" size="sm">
                 <ExternalLinkIcon className="w-4 h-4 mr-2" />
                 Open
               </Button>
             </a>
+            <Button onClick={publish}>Publish</Button>
           </div>
         </div>
       </div>

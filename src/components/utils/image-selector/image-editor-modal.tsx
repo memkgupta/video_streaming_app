@@ -25,7 +25,10 @@ interface Props {
   initialAdjustments?: ImageAdjustments;
   size?: { width: number; height: number };
 }
-
+const sizes: Record<'profile' | 'banner', any> = {
+    profile: { width: 150, height: 150 },
+    banner: { width: 820, height: 312 }
+  };
 export function ImageEditorModal({
   isOpen,
   onClose,
@@ -61,30 +64,31 @@ export function ImageEditorModal({
   }
   return (
     <div className='mt-12'>
-      <div className="flex justify-center">
-        <Cropper
-          image={getImageUrl(initialImage)}
-          crop={crop}
-          cropShape={isRounded ? 'round' : 'rect'}
-          zoom={zoom}
-          rotation={rotation}
-          aspect={size ? size.width / size.height : 1}
-          onCropChange={setCrop}
-          onZoomChange={setZoom}
-          onCropComplete={(_, areaPixels) => setCroppedAreaPixels(areaPixels)}
-          style={{
-            containerStyle: {
-              width: size?.width || '400px',
-              height: size?.height || '400px',
-              margin: 'auto',
-              position: 'relative'
-            },
-            mediaStyle: {
-              filter: `brightness(${brightness + 100}%)`
-            }
-          }}
-        />
-      </div>
+      <div className="relative h-96 overflow-hidden rounded-md">
+              <Cropper
+                image={getImageUrl(initialImage)}
+                crop={crop}
+                cropShape={isRounded?"round":"rect"}
+                zoom={zoom}
+                rotation={rotation}
+                aspect={
+                  isRounded 
+                    ? sizes.profile.width / sizes.profile.height 
+                    : sizes.banner.width / sizes.banner.height
+                }
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={(_, areaPixels) => setCroppedAreaPixels(areaPixels)}
+                style={{
+                  containerStyle: {
+                    width: '100%',
+                    height: '100%',
+                    position: 'relative'
+                  },
+              
+                }}
+              />
+            </div>
 
       <div className="controls mt-12 grid grid-cols-2 gap-4">
         <ControlSlider label="Zoom" value={zoom} onChange={setZoom} min={1} max={3} step={0.1} />

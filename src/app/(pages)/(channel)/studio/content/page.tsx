@@ -10,6 +10,7 @@ import { Video } from '@/types';
 import { DataTable } from '@/components/ui/data-table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { CustomTable } from '@/components/ui/custom-table';
+import { useApiGet } from '@/hooks/api_hooks';
 export const columns: ColumnDef<Video>[] = [
   {
     accessorKey: "thumbnail",
@@ -82,24 +83,7 @@ export const columns: ColumnDef<Video>[] = [
     },
   },
 ];
-const data: Video[] = [
-  {
-    id: "1",
-    title: "How to use React Hook Form",
-    thumbnail: "/placeholder-thumbnail.png",
-    visibility: "Public",
-    views: 3452,
-    uploadedAt: "2025-05-01",
-  },
-  {
-    id: "2",
-    title: "Next.js App Router Complete Guide",
-    thumbnail: "/placeholder-thumbnail.png",
-    visibility: "Private",
-    views: 0,
-    uploadedAt: "2025-05-17",
-  },
-];
+
 
 const Content = () => {
     const[page,setPage] = useState(1);

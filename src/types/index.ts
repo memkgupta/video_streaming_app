@@ -19,6 +19,20 @@ theme?:string;
 language?:string;
   createdAt: string;
 }
+export interface FileMetaData{
+    fileName: string;
+  fileType: string;
+  fileSize: number;
+  fileUrl: string;
+  uploadStatus: string; // e.g., "success", "failed", "in-progress"
+  errorMessage: string; // keep it empty if no error
+  videoId: string;   
+}
+export interface FileUploadDetails{
+    key:string,
+    uploadId:string,
+    assetId:string
+}
 export interface AuthState {
   user: User | null;
   accessToken: string | null;
@@ -40,6 +54,8 @@ export interface VideoDetailsForm{
   description?:string,
   category?:string,
   thumbnail?:string,
+  fileId?:string,
+  videoId?:string,
   visibility:string
 }
 
