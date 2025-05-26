@@ -5,7 +5,7 @@ export interface APIResponse<T>
     message?:string,
     error?:string,
     nextCursor?:string|number
-    prevCursor?:string|number
+    previousCursor?:string|number
 }
 export interface User {
   id: string;
@@ -44,7 +44,7 @@ export interface AuthState {
 export type Video = {
   id: string;
   title: string;
-  thumbnail: string;
+  thumbnailUrl: string;
   visibility: "Public" | "Private" | "Unlisted";
   views: number;
   uploadedAt: string;

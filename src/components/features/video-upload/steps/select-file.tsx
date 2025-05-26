@@ -33,7 +33,7 @@ const SelectFile = () => {
       })
       return res.data.data?.id || null
     } catch {
-      return null
+     throw new Error("Error uploading draft")
     }
   }
 
@@ -192,9 +192,7 @@ useEffect(() => {
       )}
 
       {/* Your Next button example */}
-      <Button disabled={status === "uploading"}>
-        Next
-      </Button>
+    
     </div>
   )
 }

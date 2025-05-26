@@ -49,7 +49,7 @@ const AccountDropDownMenu = ({ user }: { user: User }) => {
             <span className="text-xs text-muted-foreground">
               {user?.email || "you@email.com"}
             </span>
-            <Link href={`/channel`} className="mt-1 text-xs text-blue-600 font-medium hover:underline">
+            <Link href={`/studio`} className="mt-1 text-xs text-blue-600 font-medium hover:underline">
               Manage your Channel
             </Link>
           </div>
@@ -59,7 +59,7 @@ const AccountDropDownMenu = ({ user }: { user: User }) => {
 
         {/* Main Actions */}
         <DropdownMenuItem className="px-4 py-2 gap-2 hover:bg-muted cursor-pointer">
-         <Link href={`/channel`} className="flex gap-2">
+         <Link href={`/studio`} className="flex gap-2">
           <UserCircle size={18} />
           Your channel</Link>
         </DropdownMenuItem>

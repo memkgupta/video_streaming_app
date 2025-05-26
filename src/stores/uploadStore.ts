@@ -7,7 +7,7 @@ interface UploadVideoState {
   videoDetails: VideoDetailsForm
   fileUploadProgress: number
   status: "idle" | "uploading" | "uploaded" | "error"
-  nextStep?: number
+  nextStep: number
   fileKey?: string
   awsUploadId?: string
   uploadedChunks: Map<number, string>
@@ -39,6 +39,7 @@ interface UploadVideoActions {
 type UploadVideoStore = UploadVideoState & UploadVideoActions
 const initialState: UploadVideoState = {
   activeStep: 0,
+  nextStep:0,
   videoDetails: {
     title: "",
     visibility: "public",

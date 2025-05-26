@@ -24,7 +24,7 @@ export interface ApiInfiniteOptions<T,E>{
   queryKey?: QueryKey;
   enabled?: boolean;
   getNextPageParam?: (lastPage: {data:T,nextCursor:string|number|undefined}, allPages:{data:T,nextCursor:string|number|undefined}[]) => unknown;
-  onSuccess?: (data: InfiniteData<T>) => void;
+  onSuccess?: (data: APIResponse<T>) => void;
   onError?: (error: E) => void;
   infiniteOptions?: Omit<UseInfiniteQueryOptions<T, E, T, T, QueryKey>, 'queryKey' | 'queryFn' | 'getNextPageParam'>;
 }
@@ -146,37 +146,47 @@ onError,
     })
   }
 
-  export function useApiInfinite<T>(
-    url:string,
-    apiOptions:AxiosRequestConfig,
-    options:ApiInfiniteOptions<T,AxiosError>={}
-  ){
-const {
-    queryKey ,
-    getNextPageParam = (lastPage: any) => lastPage.nextCursor,
+export function useApiInfinite<T>(
+  url: string,
+  apiOptions: AxiosRequestConfig,
+  options: ApiInfiniteOptions<T, AxiosError> = {}
+) {
+  const {
+    queryKey,
+    getNextPageParam = (lastPage: { data: T; nextCursor: string | number | undefined }) =>
+      lastPage.nextCursor,
     enabled = true,
     onSuccess,
     onError,
     infiniteOptions = {},
   } = options;
 
-  return useInfiniteQuery<{data:T,nextCursor:string|number|undefined,prevCursor:string|number|undefined},AxiosError>({
-    queryKey:queryKey!,
-    queryFn: async ({ pageParam = 1 }): Promise<{data:T,nextCursor:string|number|undefined,prevCursor:string|number|undefined}> => {
+  return useInfiniteQuery<
+    { data: T; nextCursor: string | number | undefined; prevCursor: string | number | undefined }, // return type of each page
+    AxiosError,
+    InfiniteData<{ data: T; nextCursor: string | number | undefined; prevCursor: string | number | undefined }>, // `data` field from query result
+    QueryKey
+  >({
+    queryKey: queryKey!,
+    queryFn: async ({ pageParam = 1 }) => {
       const separator = url.includes('?') ? '&' : '?';
-      const response = await api.get<APIResponse<T>>(`${url}${separator}page=${pageParam}`);
-      return {data:response.data.data!,nextCursor:response.data.nextCursor,prevCursor:response.data.prevCursor};
+      const response = await api.get<APIResponse<T>>(
+        `${url}${separator}page=${pageParam}&size=50`,
+        apiOptions
+      );
+      if (onSuccess) onSuccess(response.data);
+      return {
+        data: response.data.data!,
+        nextCursor: response.data.nextCursor,
+        prevCursor: response.data.previousCursor,
+      };
     },
     getNextPageParam,
-    getPreviousPageParam:(firstPage)=>{
-      if(!firstPage.prevCursor)
-      {
-        return undefined
-      }
-      firstPage.prevCursor
+    getPreviousPageParam: (firstPage) => {
+      return firstPage.prevCursor ?? undefined;
     },
     enabled,
-    initialPageParam:1,
+    initialPageParam: 1,
     ...infiniteOptions,
-  })
-  }
+  });
+}

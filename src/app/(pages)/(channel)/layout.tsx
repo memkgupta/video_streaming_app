@@ -7,12 +7,15 @@ import { UploadVideoContextProvider } from '@/context/UploadVideoContext';
 import { useApiGet } from '@/hooks/api_hooks';
 import { useChannel } from '@/hooks/use-channel';
 import React, { useEffect } from 'react';
-
+import { useRouter } from 'next/navigation';
 const ChannelLayout = ({ children }: { children: React.ReactNode }) => {
-  
+  const router = useRouter()
   const authContext = useAuth()
   const channelContext = useChannel()
-  const {data,isFetching,isSuccess} = useApiGet("/channel/channel/my-channel",{
+  if(!authContext.isAuthenticated){
+    router.replace("/login")
+  }
+ const {data,isFetching,isSuccess} = useApiGet("/channel/channel/my-channel",{
   
   },{
     queryKey:[""],
@@ -20,17 +23,14 @@ const ChannelLayout = ({ children }: { children: React.ReactNode }) => {
       channelContext.setState(d)
     }
   });
-  // useEffect(()=>{
-  //   if(!isFetching)
-  //   {
-  //     if(isSuccess && data){
-  //       channelContext.setState(data as any)
-  //     }
-  //   }
-  // },[isSuccess])
+
   return (
-    <UploadVideoContextProvider>
-    {isFetching?<Loader/>:(
+    <>
+    {
+      isFetching ?<Loader/>:
+      (
+
+   (
        <div className="h-screen w-screen">
       {/* Fixed navbar */}
       <div className="fixed top-0 left-0 right-0 z-50">
@@ -49,8 +49,12 @@ const ChannelLayout = ({ children }: { children: React.ReactNode }) => {
       {/* Scrollable content */}
    
     </div>
-    )}
-    </UploadVideoContextProvider>
+    )
+
+      )
+    }
+    </>
+
   
   );
 };

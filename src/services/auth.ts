@@ -30,7 +30,7 @@ return response.data;
 export const refreshAuth = async (): Promise<APIResponse<AuthTokens>> => {
   const refreshToken = getRefreshToken();
 
-  if (!refreshToken) {
+  if (!refreshToken || refreshToken==null || refreshToken=="null") {
    return{
     success:false,
     error:"No refresh token provided"
@@ -88,10 +88,10 @@ export const logout = (): void => {
 export const isAuthenticated = async (): Promise<boolean> => {
   const token = getAuthToken();
   const refreshToken = getRefreshToken()
-  if (!token && !refreshToken) {
+  if (!token || !refreshToken || token==null || refreshToken==null || refreshToken=="null") {
     return false; // No token, definitely not authenticated
   }
-  if(!token && refreshToken){
+  if(!token &&  !refreshToken && (token==null || refreshToken!=null || refreshToken!="null")){
  await refreshAuth()
   }
  

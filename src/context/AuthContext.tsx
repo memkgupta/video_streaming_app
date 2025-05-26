@@ -10,6 +10,7 @@ import {
 
 import { login, register, logout, isAuthenticated, getCurrentUser } from '../services/auth';
 import { getAuthToken, getRefreshToken } from '@/utils/cookies';
+import Loader from '@/components/layout/Loader';
 
 // Define auth action types
 type AuthAction =
@@ -246,7 +247,10 @@ const handleRegister = async (credentials: RegisterCredentials): Promise<boolean
     [state]
   );
 
-  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={contextValue}>
+
+    {contextValue.isLoading?<Loader/>:children}
+  </AuthContext.Provider>;
 };
 
 // Custom hook to use auth context

@@ -31,7 +31,7 @@ console.log(videoDetails)
  try{
   setVideoDetails(data)
 await api.put(`/video/videos/fill-details`,{
-...videoDetails,assetId:assetId
+...data,assetId:assetId
 },{
   params:{
     videoId:videoId

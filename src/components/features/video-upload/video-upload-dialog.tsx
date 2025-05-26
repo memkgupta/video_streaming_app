@@ -6,9 +6,11 @@ import SelectFile from './steps/select-file'
 import VideoDetails from './steps/video-details'
 import Visibility from './steps/visibility'
 import FinalizeVideoUpload from './steps/final'
-
+import { useUploadVideoStore } from '@/stores/uploadStore'
+import {CrossIcon} from "lucide-react"
 const VideoUploadDialog = () => {
-    const [activeStep,setActiveStep] = useState(0);
+   const {activeStep,nextStep,setActiveStep,status} = useUploadVideoStore()
+   const [open, setOpen] = useState(false)
     const steps = [
         {
             id:"select-file",
@@ -32,26 +34,38 @@ const VideoUploadDialog = () => {
         
     ]
   return (
-    <Dialog>
+    <Dialog  open={open} onOpenChange={(o)=>{
+      if(!o && status!="uploading")
+      {
+        setOpen(o)
+      }
+      else{
+        setOpen(o)
+      }
+    }}>
   <DialogTrigger asChild>
-    <Button variant="ghost"  className="flex items-center rounded-md bg-gray-100 hover:bg-gray-300">
+    <Button variant="ghost" onClick={()=>setOpen(true)}  className="flex items-center rounded-md bg-gray-100 hover:bg-gray-300">
               <Video className="w-5 h-5"/>
             <span>Create</span>
           
         </Button>
   </DialogTrigger>
-  <DialogContent>
+  <DialogContent onInteractOutside={(e)=>e.preventDefault()} onEscapeKeyDown={(e)=>e.preventDefault()}>
     <DialogHeader>
-      <DialogTitle>{steps[activeStep].title}</DialogTitle>
+      
+ <DialogTitle>{steps[activeStep].title}</DialogTitle>
       <DialogDescription>
        {steps[activeStep].description}
       </DialogDescription>
+     
+   
+     
     </DialogHeader>
     {steps[activeStep].component}
     <DialogFooter className='flex justify-end'>
     <div className='flex gap-2'>
         <Button disabled={activeStep<=1} onClick={(e)=>{setActiveStep(activeStep-1)}}>Back</Button>
-        <Button disabled={activeStep==2} onClick={(e)=>{setActiveStep(activeStep+1)}}>Next</Button>
+        <Button disabled={activeStep==2 || activeStep>=nextStep} onClick={(e)=>{setActiveStep(activeStep+1)}}>Next</Button>
     </div>
     </DialogFooter>
   </DialogContent>

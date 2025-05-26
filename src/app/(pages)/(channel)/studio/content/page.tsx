@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/button";
 
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { Video } from '@/types';
+import { APIResponse, Video } from '@/types';
 import { DataTable } from '@/components/ui/data-table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { CustomTable } from '@/components/ui/custom-table';
-import { useApiGet } from '@/hooks/api_hooks';
+import { useApiGet, useApiInfinite } from '@/hooks/api_hooks';
+
 export const columns: ColumnDef<Video>[] = [
   {
     accessorKey: "thumbnail",
@@ -18,7 +19,7 @@ export const columns: ColumnDef<Video>[] = [
     cell: ({ row }) => (
       <div className="relative w-20 h-12 rounded overflow-hidden">
         <Image
-          src={row.original.thumbnail}
+          src={row.original.thumbnailUrl}
           alt={row.original.title}
           fill
           className="object-cover"
@@ -93,24 +94,34 @@ const Content = () => {
     const handleFilterStateChange = (name:string,value:any)=>{
         console.log(name,value)
     }
+    const {data,isFetching,isError} = useApiGet<APIResponse<Video[]>>(`/aggregate/channel/videos`,{
+      params:{
+        page,
+        size:50
+      }
+    },{
+      queryKey:["content",page],
+ 
+    })
   return (
      <div className="p-6">
       <h2 className="text-lg font-semibold mb-4">Your Videos</h2>
     
-    <CustomTable
+{   isError?<>Some error occurred</>: <CustomTable
     columns={columns}
-    data={data}
-   
+    data={data?.data?data.data:[]}
+  
     filterable={
         [{label:"title",type:"text"}]
     }
     totalResults={500}
     manualPagination
+    isLoading={isFetching}
     onPageChange={onPageChange}
-    hasNextPage={page<10}
-    hasPreviousPage={page>1}
+    hasNextPage={data?.nextCursor!=undefined && data?.nextCursor!=null}
+    hasPreviousPage={data?.previousCursor!=undefined && data?.previousCursor!=null}
     handleFilterStateChange={handleFilterStateChange}
-    />
+    />}
     </div>
   )
 }
