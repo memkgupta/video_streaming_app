@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react'
 
 const Home = () => {
   const [ress,setRess] = useState<any>()
-  const {data,isFetching} = useApiInfinite<APIResponse<Video[]>>(`/video/videos/`,{params:{
+  const {data,isFetching} = useApiInfinite<APIResponse<Video[]>>(`/video/videos`,{params:{
 
   }},{
     queryKey:[""],

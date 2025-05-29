@@ -16,15 +16,14 @@ export const VideoCard = ({ video }: { video: Video }) => {
       <div className="relative h-48 w-full rounded-t-2xl overflow-hidden">
         <Image
           src={video.thumbnailUrl}
-          alt={video.title}
+          alt={video.title || "Sample title"}
           fill
           className="object-cover"
         />
       </div>
       <CardContent className="pt-4 space-y-1">
         <h3 className="text-sm font-semibold line-clamp-2">{video.title}</h3>
-        {/* <p className="text-xs text-muted-foreground">{video.}</p> */}
-        {/* <p className="text-xs text-muted-foreground">{video.views.toLocaleString()} views • {new Date(video.uploadedAt).toLocaleDateString()}</p> */}
+
       </CardContent>
     </Card>
   )

@@ -130,44 +130,63 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Initialize auth state on mount
   useEffect(() => {
-  const initializeAuth = async () => {
-  if (isFrontendDev) {
-    console.log("Helloo")
-    dispatch({
-      type: 'INITIALIZE',
-      payload: {
-        user: mockUser,
-        token: mockTokens.accessToken,
-        refreshToken: mockTokens.refreshToken,
-      },
-    });
-    return;
-  }
+    const initializeAuth = async () => {
+      try {
+        if (isFrontendDev) {
+          console.log("Hello from dev mode");
 
-  const authenticated = await isAuthenticated();
-  if (authenticated) {
-    const user = await getCurrentUser();
-    const token = getAuthToken();
-    const refreshToken = getRefreshToken();
+          dispatch({
+            type: 'INITIALIZE',
+            payload: {
+              user: mockUser,
+              token: mockTokens.accessToken,
+              refreshToken: mockTokens.refreshToken,
+            },
+          });
 
-    if (!token || !refreshToken || !user) {
-      dispatch({
-        type: 'INITIALIZE',
-        payload: { user: null, token: null, refreshToken: null },
-      });
-    } else {
-      dispatch({
-        type: 'INITIALIZE',
-        payload: { user, token, refreshToken },
-      });
-    }
-  } else {
-    dispatch({
-      type: 'INITIALIZE',
-      payload: { user: null, token: null, refreshToken: null },
-    });
-  }
-};
+          return;
+        }
+
+        const authenticated = await isAuthenticated();
+
+        if (authenticated) {
+          const [user, token, refreshToken] = await Promise.all([
+            getCurrentUser(),
+            getAuthToken(),
+            getRefreshToken(),
+          ]);
+
+          if (!user || !token || !refreshToken) {
+            // Still dispatch fallback to make isLoading = false
+            dispatch({
+              type: 'INITIALIZE',
+              payload: { user: null, token: null, refreshToken: null },
+            });
+          } else {
+            dispatch({
+              type: 'INITIALIZE',
+              payload: { user, token, refreshToken },
+            });
+          }
+        } else {
+          dispatch({
+            type: 'INITIALIZE',
+            payload: { user: null, token: null, refreshToken: null },
+          });
+        }
+      } catch (err) {
+        console.error("Auth initialization failed:", err);
+
+        // Optional: show toast or alert
+        // toast.error("Something went wrong while checking authentication!");
+
+        dispatch({
+          type: 'INITIALIZE',
+          payload: { user: null, token: null, refreshToken: null },
+        });
+      }
+    };
+
     initializeAuth();
   }, []);
 
