@@ -41,7 +41,22 @@ export interface AuthState {
   isLoading: boolean;
   error: string | null;
 }
-export type Video = {
+export interface Link{
+  title:string,
+  url:string
+}
+export interface Channel {
+  id: string;
+  name: string;
+  description: string;
+  links: Link[];
+  userId: string;
+  banner: string;
+  handle: string;
+  profile: string;
+  subscribersCount: number;
+}
+export interface Video  {
   id: string;
   title: string;
   thumbnailUrl: string;
@@ -49,6 +64,13 @@ export type Video = {
   views: number;
   uploadedAt: string;
 };
+export interface VideoPlayerDetails extends Video{
+  url:string;
+  likes:number;
+  totalComments?:number;
+  description:string,
+  channelDetails:Channel
+}
 export interface VideoDetailsForm{
   title:string,
   description?:string,
@@ -58,7 +80,13 @@ export interface VideoDetailsForm{
   videoId?:string,
   visibility:string
 }
-
+export interface VideoPlayerProps {
+  src: string;
+  autoPlay?: boolean;
+  controls?: boolean;
+  width?: string;
+  height?: string;
+}
 export interface LoginCredentials {
   email: string;
   password: string;
