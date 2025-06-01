@@ -3,6 +3,7 @@ import { APIResponse } from "@/types";
 import { getAuthToken } from "@/utils/cookies";
 import axios, { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import {toast} from "sonner"
+import { refreshAuth } from "./auth";
 const api : AxiosInstance = axios.create({
     baseURL:BACKEND_BASE_URL,
    withCredentials:true,
@@ -10,11 +11,17 @@ const api : AxiosInstance = axios.create({
 })
 
 api.interceptors.request.use(
-    (config:InternalAxiosRequestConfig)=>{
+    async(config:InternalAxiosRequestConfig)=>{
         const token = getAuthToken();
         if(token && config.headers && !config.url?.endsWith("/refresh-token") && !config.url?.endsWith("/login") && !config.url?.endsWith("/register") )
         {
             config.headers.Authorization = `Bearer ${token}`;
+        }
+        if(!token && !config.url?.endsWith("/refresh-token") && !config.url?.endsWith("/login") && !config.url?.endsWith("/register") )
+        {
+          console.log("hello")
+        console.log(  await refreshAuth())
+          config.headers.Authorization = `Bearer ${getAuthToken()}`;
         }
         return config;
     },

@@ -20,14 +20,14 @@ export interface ApiMutationOptions<T,D,E>{
   onError?:(error:E,variables:D,context:unknown)=>void,
   mutationOptions?:Omit<UseMutationOptions<T,E,D,unknown>,'mutationFn'>
 }
-export interface ApiInfiniteOptions<T,E>{
-  queryKey?: QueryKey;
-  enabled?: boolean;
-  getNextPageParam?: (lastPage: {data:T,nextCursor:string|number|undefined}, allPages:{data:T,nextCursor:string|number|undefined}[]) => unknown;
-  onSuccess?: (data: APIResponse<T>) => void;
-  onError?: (error: E) => void;
-  infiniteOptions?: Omit<UseInfiniteQueryOptions<T, E, T, T, QueryKey>, 'queryKey' | 'queryFn' | 'getNextPageParam'>;
-}
+// export interface ApiInfiniteOptions<T,E,S>{
+//   queryKey?: QueryKey;
+//   enabled?: boolean;
+//   getNextPageParam?: (lastPage: {data:T,nextCursor:string|number|undefined}, allPages:{data:T[],nextCursor:string|number|undefined}[]) => unknown;
+//   onSuccess?: (data:S ) => void;
+//   onError?: (error: E) => void;
+//   infiniteOptions?: Omit<UseInfiniteQueryOptions<T, E, T, T, QueryKey>, 'queryKey' | 'queryFn' | 'getNextPageParam'>;
+// }
 export function useApiGet<T>(url:string,apiOptions:AxiosRequestConfig,options:ApiGetOptions<T,AxiosError>)
 {
      const {
@@ -145,48 +145,60 @@ onError,
 ...mutationOptions
     })
   }
-
+export interface PaginatedResponse<T> 
+{
+    success:boolean,
+    data:{
+      data:T[],
+      nextCursor:number|undefined|string,
+      prevCursor:number|undefined|string,
+      totalResults:number
+    },
+    message?:string,
+    error?:string,
+ 
+}
 export function useApiInfinite<T>(
   url: string,
   apiOptions: AxiosRequestConfig,
-  options: ApiInfiniteOptions<T, AxiosError> = {}
+  options: any
 ) {
   const {
     queryKey,
-    getNextPageParam = (lastPage: { data: T; nextCursor: string | number | undefined }) =>
-      lastPage.nextCursor,
+    
     enabled = true,
     onSuccess,
-    onError,
-    infiniteOptions = {},
+   
+
   } = options;
 
   return useInfiniteQuery<
-    { data: T; nextCursor: string | number | undefined; prevCursor: string | number | undefined }, // return type of each page
-    AxiosError,
-    InfiniteData<{ data: T; nextCursor: string | number | undefined; prevCursor: string | number | undefined }>, // `data` field from query result
-    QueryKey
-  >({
-    queryKey: queryKey!,
-    queryFn: async ({ pageParam = 1 }) => {
-      const separator = url.includes('?') ? '&' : '?';
-      const response = await api.get<APIResponse<T>>(
-        `${url}${separator}page=${pageParam}&size=50`,
-        apiOptions
-      );
-      if (onSuccess) onSuccess(response.data);
-      return {
-        data: response.data.data!,
-        nextCursor: response.data.nextCursor,
-        prevCursor: response.data.previousCursor,
-      };
-    },
-    getNextPageParam,
-    getPreviousPageParam: (firstPage) => {
-      return firstPage.prevCursor ?? undefined;
-    },
-    enabled,
-    initialPageParam: 1,
-    ...infiniteOptions,
-  });
+  { data: T[]; nextCursor?: string | number; prevCursor?: string | number },
+  AxiosError,
+  InfiniteData<{ data: T[]; nextCursor?: string | number; prevCursor?: string | number }>,
+  QueryKey
+>({
+  queryKey: queryKey!,
+  queryFn: async (props) => {
+    const separator = url.includes('?') ? '&' : '?';
+    const response = await api.get<PaginatedResponse<T>>(
+      `${url}${separator}page=${props.pageParam}&size=50`,
+      apiOptions
+    );
+    if (onSuccess) onSuccess(response.data.data.data);
+
+    return {
+      data: response.data.data.data,
+      nextCursor: response.data.data.nextCursor,
+      prevCursor: response.data.data.prevCursor,
+    };
+  },
+  getNextPageParam: (lastPage, allPages, lastPageParam, allPageParams) =>
+    lastPage.nextCursor,
+  getPreviousPageParam: (firstPage, allPages, firstPageParam, allPageParams) =>
+    firstPage.prevCursor,
+  enabled,
+  initialPageParam: 1
+  
+});
 }

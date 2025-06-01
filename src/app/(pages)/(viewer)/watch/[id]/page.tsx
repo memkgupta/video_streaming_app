@@ -1,50 +1,13 @@
-"use client"
-import { VideoCard } from '@/components/features/videos/VideoCard'
-import VideoPlayer from '@/components/features/videos/VideoPlayer'
-import Loader from '@/components/layout/Loader'
-import { BACKEND_BASE_URL } from '@/constants'
-import { useApiGet } from '@/hooks/api_hooks'
-import { APIResponse, Video, VideoPlayerDetails, VideoPlayerProps } from '@/types'
-import React, { useState } from 'react'
+import React from 'react'
+import VideoWatchPage from './VideoWatchPage'
 
-const VideoWatchPage = ({params}:{params:{id:string}}) => {
-  const [video,setVideo] = useState<VideoPlayerProps|null>(null);
-  const {data,isFetching:isVideoFetching} = useApiGet<VideoPlayerDetails>(`${BACKEND_BASE_URL}/aggregate/videos/watch`,
-    {params:{
-      videoId:params.id
-    }},
-    {
-      queryKey:[params.id],
-      onSuccess :(data)=> {
-       
-        const videoData = data
-        console.log(videoData)
-        if(videoData!=undefined)
-        {
-            setVideo({
-            src:videoData.url,
-            autoPlay:true,
-            controls:true,
-            height:"auto",
-            width:"100%"
-          })
-        }
-        
-      },
-    }
-  )
+const page = async({params}:{params:Promise<{id:string}>}) => {
+    const {id:videoId} = await params
   return (
     <div>
-      {isVideoFetching ? <Loader/> :(
-        <div>
-           {video!=null && <VideoPlayer {...video}></VideoPlayer>}
-          </div>
-
-
-      )}
-      
+        <VideoWatchPage params={{id:videoId}}/>
     </div>
   )
 }
 
-export default VideoWatchPage
+export default page

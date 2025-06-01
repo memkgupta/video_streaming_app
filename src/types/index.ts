@@ -17,7 +17,7 @@ export interface User {
   channelId?:string
 theme?:string;
 language?:string;
-  createdAt: string;
+  createdAt?: string;
 }
 export interface FileMetaData{
     fileName: string;
@@ -107,3 +107,15 @@ export interface AuthResponse {
 }
 
 
+export interface Comment {
+  id: string;
+  content: string;
+  createdAt: string;
+  updatedAt?: string;
+  likes: number;
+  dislikes: number;
+  userId: string;
+  user: User;
+  replyToId?: string;
+  replies?: Comment[];
+}

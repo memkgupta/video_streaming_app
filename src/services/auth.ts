@@ -29,7 +29,7 @@ return response.data;
 
 export const refreshAuth = async (): Promise<APIResponse<AuthTokens>> => {
   const refreshToken = getRefreshToken();
-
+    console.log(refreshToken)
   if (!refreshToken || refreshToken==null || refreshToken=="null") {
    return{
     success:false,
@@ -43,8 +43,9 @@ export const refreshAuth = async (): Promise<APIResponse<AuthTokens>> => {
   }})
 
   if (response.success && response.data) {
-    setAuthTokens(response.data.accessToken, response.data.refreshToken);
-  } else {
+    setAuthTokens(response.data.accessToken,refreshToken);
+    
+} else {
     // If refresh fails, it's critical to remove old (now invalid) tokens
     // to prevent loops or using stale data.
 
